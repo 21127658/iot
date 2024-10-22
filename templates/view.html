@@ -1,15 +1,41 @@
 <!doctype html>
 <title>Hello from Flask</title>
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.
-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
-$(document).ready(function(){setInterval(function(){
-$("#autodiv").load('auto')
-}, 1000);});
+        $(document).ready(function () {
+            setInterval(function () {
+                $("#autodiv").load('auto')
+                $("#timeChangediv").load('timeAtChange')
+            }, 1000);
+        });
     </script>
+    <style>
+        .interItems {
+            text-align: center;
+        }
+        .interactiveButtons {
+            padding: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        .changeButton {
+            width: 10em;
+            height: 10em;
+        }
+    </style>
 </head>
 <body>
-    <div>data={{ data }}</div>
-    <div id=autodiv>--</div>
+    
+    <div class='interItems'>
+        <div id="autodiv">--</div>
+        <div id="timeChangediv">--</div>
+        <div class='interactiveButtons'>
+            <form action='#' method='POST'>
+                <button class='changeButton' onclick="changeState()" name="change" value="change">Change LED state</button>
+            </form>
+        </div>
+    </div>
 </body>
