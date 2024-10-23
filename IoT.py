@@ -12,22 +12,26 @@ class Led:
     def __init__(self):
         self.queue = queue.Queue()
         self.finish = False
-        self.state = True
+        if data[-1] == '1':
+            self.state = True
+        else:             
+            self.state = False
         self.thread = threading.Thread(target=self.__run__)
         self.thread.start()
         
     def __run__(self):
         while not self.finish:
             if not self.queue.empty():
-                state = self.queue.get()
-                ser.write(str('changed').encode())
+                self.state = self.queue.get()
+                ser.write(str(self.state).encode())
+                time.sleep(0.5)
             else:
-                time.sleep(1)
+                time.sleep(0.5)
                 
     def update(self, state):
         self.queue.put(state)
         
-ser = serial.Serial('COM7', 9600, timeout=1)
+ser = serial.Serial('COM3', 9600, timeout=1)
 
 def readingThread():
     global is_reading
@@ -45,7 +49,7 @@ def update_data(s):
     s = s.split()
     try:
         if(len(s) == 6):      # Check if the data is not "changed" - to change the LED state
-            received_data = [str(s[0])[2:-1], str(s[2])[2:-1], str(s[4])[2:-1]]
+            received_data = [s[0].decode(), s[2].decode(), s[4].decode()]
             received_crc = [int(s[1]), int(s[3]), int(s[5])]
             calculated_crc = [CRCCal(s[0]), CRCCal(s[2]), CRCCal(s[4])]
             if (received_crc == calculated_crc):
@@ -64,7 +68,6 @@ def update_data(s):
         print("Invalid data: ", s)
         return False
 
-led = Led()
 app = flask.Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -91,4 +94,6 @@ if __name__ == '__main__':
     timeChange = ""
     t = threading.Thread(target=readingThread)
     t.start()
-    app.run(host='0.0.0.0')
+    while data == "": {}
+    led = Led()
+    app.run(host = '0.0.0.0')
